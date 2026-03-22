@@ -38,7 +38,6 @@ export function Navbar({ username }: NavbarProps) {
                 </svg>
                         <span className="text-sm text-neutral-400">{username}</span>
                     </div>
-                  
                     <button
                         onClick={handleLogout}
                         disabled={loggingOut}
@@ -47,7 +46,6 @@ export function Navbar({ username }: NavbarProps) {
                         {loggingOut ? "..." : "Sign out"}
                     </button>
                     </div>
-                    
                 </div>
             </div>
         </header>

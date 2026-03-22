@@ -61,7 +61,7 @@ export function DashboardClient({
                     onClick={() => setModal("spend")}
                     className="py-4 border-neutral-800 bg-neutral-900/50 hover:bg-neutral-800 hover:border-neutral-700 text-lg tracking-tight group "
                 >
-                    <span className="text-white mr-2 group-hover:text-red-400">↑ Spend Funds</span> 
+                    <span className="text-white mr-2 group-hover:text-red-400">↑ Spend Funds</span>
                 </Button>
             </div>
 
