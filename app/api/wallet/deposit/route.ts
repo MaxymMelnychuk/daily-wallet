@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/session";
 import { db } from "@/lib/db";
+import { logger } from "@/lib/logger";
 import type { WalletResponse } from "@/types/auth";
 import type { RowDataPacket } from "mysql2/promise";
 
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
     } catch (err) {
         await connection.rollback();
         connection.release();
-        console.error("Deposit transaction error:", err);
+        logger.error({ err }, "Deposit transaction error");
         return NextResponse.json<WalletResponse>(
             { error: "Internal Server Error" },
             { status: 500 },
