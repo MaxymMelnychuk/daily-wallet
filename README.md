@@ -3,6 +3,8 @@
 ## 📖 What is this project used for?
 Daily Wallet is a personal finance tracker and virtual wallet application. It allows users to manage their daily expenses, track their current balance, easily deposit virtual funds, and view a comprehensive history of their transactions in a beautifully designed dashboard.
 
+https://github.com/user-attachments/assets/f2c5f51c-c084-4392-86ce-27dec5c97089
+
 ## 🤔 Why this project?
 Managing daily expenses can often be tedious and unnecessarily complex. The goal of this project is to provide a fast, secure, and visually appealing interface to track spending and income in real-time. By providing a clean dashboard, it helps users stay on top of their financial health effortlessly.
 
