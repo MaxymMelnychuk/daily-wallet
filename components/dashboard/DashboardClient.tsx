@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { BalanceCard } from "./BalanceCard";
 import { StatsRow } from "./StatsRow";
 import { WalletModal } from "./WalletModal";
 import { TransactionList } from "./TransactionList";
 import { Button } from "@/components/ui/Button";
+import { useAppDispatch, useAppSelector } from "@/store/hooks";
+import { initWallet, setModal, applyTransaction } from "@/store/walletSlice";
 
 interface DashboardClientProps {
     initialBalance: number;
@@ -14,35 +16,24 @@ interface DashboardClientProps {
     transactionCount: number;
 }
 
-type ModalMode = "deposit" | "spend" | null;
-
 export function DashboardClient({
     initialBalance,
-    totalDeposited: initDeposited,
-    totalSpent: initSpent,
-    transactionCount: initCount,
+    totalDeposited,
+    totalSpent,
+    transactionCount,
 }: DashboardClientProps) {
-    const [balance, setBalance] = useState(initialBalance);
-    const [totalDeposited, setTotalDeposited] = useState(initDeposited);
-    const [totalSpent, setTotalSpent] = useState(initSpent);
-    const [transactionCount, setTransactionCount] = useState(initCount);
-    const [modal, setModal] = useState<ModalMode>(null);
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
+    const dispatch = useAppDispatch();
 
-    const handleSuccess = (
-        newBalance: number,
-        type: "deposit" | "spend",
-        amount: number,
-    ) => {
-        setBalance(newBalance);
-        setTransactionCount((c) => c + 1);
-        if (type === "deposit") {
-            setTotalDeposited((t) => t + amount);
-        } else {
-            setTotalSpent((t) => t + amount);
-        }
-        setRefreshTrigger((n) => n + 1);
-    };
+    const balance = useAppSelector((state) => state.wallet.balance);
+    const totalDep = useAppSelector((state) => state.wallet.totalDeposited);
+    const totalSp = useAppSelector((state) => state.wallet.totalSpent);
+    const txCount = useAppSelector((state) => state.wallet.transactionCount);
+    const modal = useAppSelector((state) => state.wallet.modal);
+    const refreshTrigger = useAppSelector((state) => state.wallet.refreshTrigger);
+
+    useEffect(() => {
+        dispatch(initWallet({ balance: initialBalance, totalDeposited, totalSpent, transactionCount }));
+    }, [dispatch, initialBalance, totalDeposited, totalSpent, transactionCount]);
 
     return (
         <main className="mx-auto px-6 flex flex-col gap-6 w-full">
@@ -51,14 +42,14 @@ export function DashboardClient({
             <div className="grid grid-cols-2 gap-4">
                 <Button
                     variant="outline"
-                    onClick={() => setModal("deposit")}
+                    onClick={() => dispatch(setModal("deposit"))}
                     className="py-4 border-neutral-800 bg-neutral-900/50 hover:bg-neutral-800 hover:border-neutral-700 text-lg tracking-tight group"
                 >
                     <span className="group-hover:text-green-500 mr-2">↓ Add Funds</span>
                 </Button>
                 <Button
                     variant="outline"
-                    onClick={() => setModal("spend")}
+                    onClick={() => dispatch(setModal("spend"))}
                     className="py-4 border-neutral-800 bg-neutral-900/50 hover:bg-neutral-800 hover:border-neutral-700 text-lg tracking-tight group "
                 >
                     <span className="text-white mr-2 group-hover:text-red-400">↑ Spend Funds</span>
@@ -66,9 +57,9 @@ export function DashboardClient({
             </div>
 
             <StatsRow
-                totalDeposited={totalDeposited}
-                totalSpent={totalSpent}
-                transactionCount={transactionCount}
+                totalDeposited={totalDep}
+                totalSpent={totalSp}
+                transactionCount={txCount}
             />
 
             <TransactionList refreshTrigger={refreshTrigger} />
@@ -76,11 +67,10 @@ export function DashboardClient({
             {modal && (
                 <WalletModal
                     mode={modal}
-                    onClose={() => setModal(null)}
+                    onClose={() => dispatch(setModal(null))}
                     onSuccess={(newBalance) => {
-                        const prevBalance = balance;
-                        const diff = Math.abs(newBalance - prevBalance);
-                        handleSuccess(newBalance, modal, diff);
+                        const amount = Math.abs(newBalance - balance);
+                        dispatch(applyTransaction({ newBalance, type: modal, amount }));
                     }}
                 />
             )}
