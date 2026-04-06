@@ -25,7 +25,17 @@ export function WalletModal({ mode, onClose, onSuccess }: WalletModalProps) {
         setLoading(true);
 
         const endpoint = mode === "deposit" ? "/api/wallet/deposit" : "/api/wallet/spend";
-        const body = { amount: parseFloat(amount), description };
+        const parsed = Number.parseFloat(amount);
+        const body = {
+            amount: parsed,
+            description: description.trim() || null,
+        };
+
+        if (!Number.isFinite(parsed) || parsed <= 0) {
+            setError("Enter a valid positive amount");
+            setLoading(false);
+            return;
+        }
 
         try {
             const res = await fetch(endpoint, {
@@ -61,9 +71,11 @@ export function WalletModal({ mode, onClose, onSuccess }: WalletModalProps) {
                 className="w-full max-w-md bg-black border border-neutral-800 p-8 shadow-2xl animate-slide-up"
                 onClick={(e) => e.stopPropagation()}
                 role="dialog"
+                aria-modal="true"
+                aria-labelledby="wallet-modal-title"
             >
                 <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-xl font-medium tracking-tight text-white">
+                    <h2 id="wallet-modal-title" className="text-xl font-medium tracking-tight text-white">
                         {isDeposit ? "Add Funds" : "Spend Funds"}
                     </h2>
                     <button
