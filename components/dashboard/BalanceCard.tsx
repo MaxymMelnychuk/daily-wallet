@@ -8,13 +8,15 @@ interface BalanceCardProps {
 
 function AnimatedBalance({ value }: { value: number }) {
     const ref = useRef<HTMLSpanElement>(null);
+    const prevRef = useRef(value);
 
     useEffect(() => {
         const el = ref.current;
         if (!el) return;
 
-        const start = 0;
+        const start = prevRef.current;
         const end = value;
+        prevRef.current = value;
         const duration = 800;
         const startTime = performance.now();
 
@@ -41,7 +43,7 @@ function AnimatedBalance({ value }: { value: number }) {
 
 export function BalanceCard({ balance }: BalanceCardProps) {
     return (
-        <div className="relative border border-neutral-900 bg-neutral-950 p-24  flex flex-col items-center justify-center overflow-hidden">
+        <div className="relative border border-neutral-900 bg-neutral-950 p-24 flex flex-col items-center justify-center overflow-hidden">
             <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-64 h-64 bg-white/5 blur-[80px] rounded-full pointer-events-none" />
 
             <div className="text-xs font-mono uppercase tracking-widest text-neutral-500 mb-4">

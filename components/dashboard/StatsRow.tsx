@@ -1,3 +1,4 @@
+/** Summary tiles under the hero balance (totals + transaction count). */
 interface StatsRowProps {
     totalDeposited: number;
     totalSpent: number;
@@ -20,7 +21,7 @@ function StatCard({
     };
 
     return (
-        <div className="flex flex-col gap-2 p-6 bg-neutral-900/30 border border-neutral-800">
+        <div className="flex flex-col gap-2 p-6 bg-neutral-900/30 border border-neutral-800 rounded-sm">
             <span className="text-[10px] font-mono uppercase tracking-widest text-neutral-500">
                 {label}
             </span>
