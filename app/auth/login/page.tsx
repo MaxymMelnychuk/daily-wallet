@@ -24,7 +24,10 @@ export default function LoginPage() {
       const res = await fetch("/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({
+          email: email.trim(),
+          password,
+        }),
       });
 
       const data: LoginResponse = await res.json();
@@ -32,7 +35,6 @@ export default function LoginPage() {
       if (!res.ok)
         throw new Error(data.error || "Username or password not valid");
 
-      console.log("Logged in user:", data.user);
       router.push("/");
     } catch (err) {
       if (err instanceof Error) {
