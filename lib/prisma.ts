@@ -11,6 +11,8 @@ function createPrismaClient(): PrismaClient {
     return new PrismaClient({ adapter });
 }
 
+export type AppPrismaClient = PrismaClient;
+
 /**
  * One PrismaClient per Node process in dev (Next.js hot reload) to avoid exhausting pools.
  */
