@@ -9,8 +9,9 @@ export function getDatabaseUrl(): string {
         return explicit;
     }
 
-    const host = process.env.DB_HOST ?? "127.0.0.1";
-    const port = process.env.DB_PORT ?? "3306";
+    const host = process.env.DB_HOST?.trim() || "127.0.0.1";
+    const portRaw = process.env.DB_PORT?.trim() || "3306";
+    const port = /^\d+$/.test(portRaw) ? portRaw : "3306";
     const user = process.env.DB_USER ?? "root";
     const password = process.env.DB_PASSWORD ?? "";
     const database = process.env.DB_NAME ?? "daily_wallet";
