@@ -5,6 +5,7 @@ import { logger } from "@/lib/logger";
 import type { WalletResponse } from "@/types/auth";
 import type { RowDataPacket } from "mysql2/promise";
 
+/** Credits balance and appends a `deposit` ledger row inside one DB transaction. */
 export async function POST(req: NextRequest) {
     const sessionUser = await getSessionUser();
 

@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/session";
 import { db } from "@/lib/db";
-import type { TransactionsResponse } from "@/types/auth";
+import { TRANSACTION_TYPES, type TransactionsResponse } from "@/types/auth";
 import type { RowDataPacket } from "mysql2/promise";
 
+/** Paginated ledger for the signed-in user; optional `type=deposit|spend` filter. */
 export async function GET(req: NextRequest) {
     const sessionUser = await getSessionUser();
 
@@ -16,12 +17,15 @@ export async function GET(req: NextRequest) {
 
     const { searchParams } = new URL(req.url);
     const type = searchParams.get("type") ?? "all";
-    const page = Math.max(1, parseInt(searchParams.get("page") ?? "1", 10));
-    const limit = Math.min(50, parseInt(searchParams.get("limit") ?? "10", 10));
+    const pageRaw = parseInt(searchParams.get("page") ?? "1", 10);
+    const page = Math.max(1, Number.isFinite(pageRaw) ? pageRaw : 1);
+    const limitRaw = parseInt(searchParams.get("limit") ?? "10", 10);
+    const limit = Math.min(50, Number.isFinite(limitRaw) && limitRaw > 0 ? limitRaw : 10);
     const offset = (page - 1) * limit;
 
-    const validTypes = ["deposit", "spend"];
-    const typeFilter = validTypes.includes(type) ? type : null;
+    const typeFilter = TRANSACTION_TYPES.includes(type as (typeof TRANSACTION_TYPES)[number])
+        ? type
+        : null;
 
     const baseWhere = typeFilter
         ? "WHERE user_id = ? AND type = ?"
