@@ -5,12 +5,21 @@ import type { RowDataPacket } from "mysql2/promise";
 import { Navbar } from "@/components/dashboard/Navbar";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 
+/** Loads the signed-in user row plus aggregate transaction stats for the dashboard header. */
 async function getUserData(userId: number) {
   const [userRows] = await db.query<RowDataPacket[]>(
     "SELECT id, username, email, balance, created_at FROM users WHERE id = ?",
     [userId],
   );
-  const user = (userRows as { id: number; username: string; email: string; balance: number; created_at: string }[])[0];
+  const user = (
+    userRows as {
+      id: number;
+      username: string;
+      email: string;
+      balance: number;
+      created_at: string;
+    }[]
+  )[0];
   if (!user) return null;
 
   const [statsRows] = await db.query<RowDataPacket[]>(
