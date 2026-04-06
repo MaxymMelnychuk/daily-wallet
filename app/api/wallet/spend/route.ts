@@ -5,6 +5,7 @@ import { logger } from "@/lib/logger";
 import type { WalletResponse } from "@/types/auth";
 import type { RowDataPacket } from "mysql2/promise";
 
+/** Locks the user row, rejects insufficient funds, then debits and records `spend`. */
 export async function POST(req: NextRequest) {
     const sessionUser = await getSessionUser();
 
