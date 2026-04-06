@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 
+/** Narrow `select` shape reused anywhere we hydrate a user without secrets. */
 const safeUserSelect = {
     id: true,
     username: true,
