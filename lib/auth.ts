@@ -4,12 +4,15 @@ import { RowDataPacket, ResultSetHeader } from "mysql2/promise";
 import type { UserRow } from "@/types/user";
 import type { SessionUser } from "@/types/auth";
 
+const BCRYPT_COST = 10;
+
+/** Registers a user with a hashed password; throws if the email already exists. */
 export async function createUser(
   username: string,
   email: string,
   password: string,
 ) {
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(password, BCRYPT_COST);
 
   const [existingRows] = await db.query<RowDataPacket[]>(
     "SELECT id FROM users WHERE email = ?",
@@ -26,6 +29,7 @@ export async function createUser(
   return result.insertId;
 }
 
+/** Returns session fields when credentials match; otherwise `null` (same message as invalid user). */
 export async function verifyUser(email: string, password: string) {
   const [rows] = await db.query<RowDataPacket[]>(
     "SELECT * FROM users WHERE email = ?",
