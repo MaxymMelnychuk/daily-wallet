@@ -5,6 +5,7 @@ import type { MeResponse } from "@/types/auth";
 import type { UserRow } from "@/types/user";
 import type { RowDataPacket } from "mysql2/promise";
 
+/** Current user profile + balance for client refresh hooks. */
 export async function GET() {
     const sessionUser = await getSessionUser();
 
@@ -27,7 +28,7 @@ export async function GET() {
             id: user.id,
             username: user.username,
             email: user.email,
-            balance: user.balance,
+            balance: Number(user.balance),
             created_at: user.created_at,
         },
     });
