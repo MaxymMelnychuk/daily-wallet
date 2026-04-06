@@ -16,6 +16,7 @@ interface TransactionListProps {
     refreshTrigger?: number;
 }
 
+/** Paginated ledger with tabs; `refreshTrigger` bumps fetches after wallet mutations. */
 export function TransactionList({ refreshTrigger }: TransactionListProps) {
     const [tab, setTab] = useState<TabType>("all");
     const [transactions, setTransactions] = useState<TransactionRow[]>([]);
@@ -55,7 +56,7 @@ export function TransactionList({ refreshTrigger }: TransactionListProps) {
     };
 
     return (
-        <div className="flex flex-col  border-neutral-800 bg-black overflow-hidden mt-6">
+        <div className="flex flex-col border border-neutral-800 bg-black overflow-hidden mt-6 rounded-sm">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-6 border-b border-neutral-700 gap-4">
                 <h2 className="text-sm font-medium tracking-tight text-white uppercase">
                     Transaction History

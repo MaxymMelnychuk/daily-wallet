@@ -1,5 +1,6 @@
 import type { TransactionRow } from "@/types/auth";
 
+/** Single ledger row: direction chip, optional description, localized timestamp. */
 interface TransactionItemProps {
     tx: TransactionRow;
 }
@@ -7,14 +8,19 @@ interface TransactionItemProps {
 export function TransactionItem({ tx }: TransactionItemProps) {
     const isDeposit = tx.type === "deposit";
     const date = new Date(tx.created_at);
-    const formattedDate = date.toLocaleDateString("en-US", {
-        month: "short",
-        day: "numeric",
-    });
-    const time = date.toLocaleTimeString("en-US", {
-        hour: "numeric",
-        minute: "2-digit",
-    });
+    const invalid = Number.isNaN(date.getTime());
+    const formattedDate = invalid
+        ? "—"
+        : date.toLocaleDateString("en-US", {
+              month: "short",
+              day: "numeric",
+          });
+    const time = invalid
+        ? ""
+        : date.toLocaleTimeString("en-US", {
+              hour: "numeric",
+              minute: "2-digit",
+          });
 
     return (
         <div className="group flex items-center justify-between p-4 border-b border-neutral-800/50 hover:bg-neutral-900/30 transition-colors">
@@ -32,8 +38,12 @@ export function TransactionItem({ tx }: TransactionItemProps) {
                     </span>
                     <span className="text-xs text-neutral-500 flex gap-2">
                         <span>{formattedDate}</span>
-                        <span>&middot;</span>
-                        <span>{time}</span>
+                        {!invalid && (
+                            <>
+                                <span>&middot;</span>
+                                <span>{time}</span>
+                            </>
+                        )}
                     </span>
                 </div>
             </div>
