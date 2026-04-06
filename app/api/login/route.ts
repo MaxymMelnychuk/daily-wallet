@@ -3,9 +3,12 @@ import { verifyUser } from "@/lib/auth";
 import { getSession } from "@/lib/session";
 import type { LoginResponse } from "@/types/auth";
 
+/** Validates credentials, then persists `session.user` in the iron-session cookie. */
 export async function POST(req: NextRequest) {
     try {
-        const { email, password } = await req.json();
+        const body = await req.json();
+        const email = typeof body.email === "string" ? body.email.trim() : "";
+        const password = typeof body.password === "string" ? body.password : "";
 
         if (!email || !password) {
             return NextResponse.json<LoginResponse>(

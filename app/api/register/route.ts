@@ -5,7 +5,10 @@ import type { RegisterResponse } from "@/types/auth";
 
 export async function POST(req: NextRequest) {
     try {
-        const { username, email, password } = await req.json();
+        const body = await req.json();
+        const username = typeof body.username === "string" ? body.username.trim() : "";
+        const email = typeof body.email === "string" ? body.email.trim() : "";
+        const password = typeof body.password === "string" ? body.password.trim() : "";
 
         if (!username || !email || !password) {
             return NextResponse.json<RegisterResponse>(
