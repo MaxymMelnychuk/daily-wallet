@@ -1,10 +1,16 @@
+/**
+ * Shared API and session DTOs. Keeps route handlers and the Redux client aligned on shapes.
+ */
+
 export type SessionUser = {
   id: number;
   username: string;
   email: string;
 };
 
-export type TransactionType = "deposit" | "spend";
+/** Ledger line items — matches DB `transactions.type` enum values. */
+export const TRANSACTION_TYPES = ["deposit", "spend"] as const;
+export type TransactionType = (typeof TRANSACTION_TYPES)[number];
 
 export type TransactionRow = {
   id: number;
