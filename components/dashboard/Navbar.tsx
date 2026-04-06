@@ -7,20 +7,25 @@ interface NavbarProps {
     username: string;
 }
 
+/** Top bar with account chip and sign-out; clears session via `/api/logout`. */
 export function Navbar({ username }: NavbarProps) {
     const router = useRouter();
     const [loggingOut, setLoggingOut] = useState(false);
 
     const handleLogout = async () => {
         setLoggingOut(true);
-        await fetch("/api/logout", { method: "POST" });
-        router.push("/auth/login");
-        router.refresh();
+        try {
+            await fetch("/api/logout", { method: "POST" });
+            router.push("/auth/login");
+            router.refresh();
+        } finally {
+            setLoggingOut(false);
+        }
     };
 
     return (
         <header className="sticky top-0 z-50 bg-black/80 backdrop-blur-md border-b border-neutral-900">
-            <div className=" mx-auto px-6 h-16 flex items-center justify-between">
+            <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <span className="text-white font-medium tracking-tight">DailyWallet</span>
                 </div>
@@ -41,7 +46,7 @@ export function Navbar({ username }: NavbarProps) {
                     <button
                         onClick={handleLogout}
                         disabled={loggingOut}
-                        className="text-white border border-red-950/80 hover:bg-red-900/20 px-4 py-2 text-sm cursor-pointer"
+                        className="text-white border border-red-950/80 hover:bg-red-900/20 px-4 py-2 text-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                         {loggingOut ? "..." : "Sign out"}
                     </button>
