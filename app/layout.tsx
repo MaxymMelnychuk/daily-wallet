@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { StoreProvider } from "./StoreProvider";
@@ -17,6 +17,10 @@ export const metadata: Metadata = {
   title: "DailyWallet – Virtual Wallet Dashboard",
   description:
     "Track your virtual balance, deposit and spend virtual money.",
+};
+
+export const viewport: Viewport = {
+  themeColor: "#000000",
 };
 
 export default function RootLayout({

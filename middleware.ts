@@ -3,11 +3,12 @@ import { getIronSession } from "iron-session";
 import { sessionOptions } from "@/lib/session";
 import type { SessionUser } from "@/types/auth";
 
-
+/** Routes that require a session cookie (dashboard home is `/`). */
 const PROTECTED_PATHS = ["/"];
 
 const AUTH_PATHS = ["/auth/login", "/auth/register"];
 
+/** Gate the SPA shell: unauthenticated users hit login; signed-in users skip auth pages. */
 export async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
 
