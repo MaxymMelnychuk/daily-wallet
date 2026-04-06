@@ -1,5 +1,6 @@
 import { createSlice, type PayloadAction } from "@reduxjs/toolkit";
 
+/** Local dashboard state: mirrors server totals for UX; `refreshTrigger` nudges list refetches. */
 type ModalMode = "deposit" | "spend" | null;
 
 interface WalletState {
@@ -38,6 +39,9 @@ export const walletSlice = createSlice({
             action: PayloadAction<{ newBalance: number; type: "deposit" | "spend"; amount: number }>,
         ) {
             const { newBalance, type, amount } = action.payload;
+            if (!Number.isFinite(amount) || amount <= 0) {
+                return;
+            }
             state.balance = newBalance;
             state.transactionCount += 1;
             state.refreshTrigger += 1;
