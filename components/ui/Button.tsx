@@ -7,7 +7,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
 }
 
-const baseClasses = "px-4 py-2 text-sm cursor-pointer transition-colors";
+const baseClasses =
+  "px-4 py-2 text-sm cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed";
 
 const variantClasses: Record<Variant, string> = {
   primary:
