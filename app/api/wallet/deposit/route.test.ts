@@ -27,6 +27,10 @@ vi.mock("@/lib/db", () => ({
     },
 }));
 
+/**
+ * Deposit route: we mock session + mysql2 connection to assert status codes and
+ * that commit/release happen on the happy path (no real database).
+ */
 describe("POST /api/wallet/deposit", () => {
     beforeEach(() => {
         vi.clearAllMocks();

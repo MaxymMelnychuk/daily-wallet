@@ -27,6 +27,10 @@ vi.mock("@/lib/db", () => ({
     },
 }));
 
+/**
+ * Spend route tests focus on auth, validation, insufficient funds (422), and a
+ * successful debit — all without a live MySQL server.
+ */
 describe("POST /api/wallet/spend", () => {
     beforeEach(() => {
         vi.clearAllMocks();
