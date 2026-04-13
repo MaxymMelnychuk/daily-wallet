@@ -3,12 +3,21 @@ import { getIronSession } from "iron-session";
 import { sessionOptions } from "@/lib/session";
 import type { SessionUser } from "@/types/auth";
 
-/** Routes that require a session cookie (dashboard home is `/`). */
+/**
+ * App pages that require login. `/` is special: exact match only, otherwise
+ * we would block every path (everything “starts with” `/`).
+ */
 const PROTECTED_PATHS = ["/"];
 
+/** Auth screens — logged-in users get bounced to the dashboard. */
 const AUTH_PATHS = ["/auth/login", "/auth/register"];
 
-/** Gate the SPA shell: unauthenticated users hit login; signed-in users skip auth pages. */
+/**
+ * Runs on the Edge before a page loads. We decrypt the session cookie, then:
+ * - send anonymous users to `/auth/login` for protected routes
+ * - send signed-in users away from login/register to `/`
+ * API routes are excluded via `config.matcher` below.
+ */
 export async function middleware(req: NextRequest) {
     const { pathname } = req.nextUrl;
 
@@ -40,9 +49,12 @@ export async function middleware(req: NextRequest) {
     return res;
 }
 
+/**
+ * Skip static assets, Next internals, and all `/api/*` — APIs do their own
+ * auth checks so JSON clients are not redirected to HTML login pages.
+ */
 export const config = {
     matcher: [
-
         "/((?!api|_next/static|_next/image|favicon.ico).*)",
     ],
 };
