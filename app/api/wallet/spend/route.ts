@@ -5,7 +5,15 @@ import { logger } from "@/lib/logger";
 import type { WalletResponse } from "@/types/auth";
 import type { RowDataPacket } from "mysql2/promise";
 
-/** Locks the user row, rejects insufficient funds, then debits and records `spend`. */
+/** Same cent rounding as deposit so both routes behave consistently. */
+function toCents(amount: number): number {
+    return Math.round(amount * 100) / 100;
+}
+
+/**
+ * Spend path: `SELECT ... FOR UPDATE` locks the user row for the duration of
+ * the transaction so two parallel spends cannot both pass a balance check.
+ */
 export async function POST(req: NextRequest) {
     const sessionUser = await getSessionUser();
 
@@ -26,7 +34,7 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    const rounded = Math.round(parsedAmount * 100) / 100;
+    const rounded = toCents(parsedAmount);
 
     const connection = await db.getConnection();
     await connection.beginTransaction();

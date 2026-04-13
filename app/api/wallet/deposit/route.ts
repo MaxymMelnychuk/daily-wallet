@@ -5,7 +5,15 @@ import { logger } from "@/lib/logger";
 import type { WalletResponse } from "@/types/auth";
 import type { RowDataPacket } from "mysql2/promise";
 
-/** Credits balance and appends a `deposit` ledger row inside one DB transaction. */
+/** Round to cents to avoid float drift in money-ish math. */
+function toCents(amount: number): number {
+    return Math.round(amount * 100) / 100;
+}
+
+/**
+ * Adds funds: `UPDATE users` + `INSERT transactions` inside one connection
+ * transaction so you never get a ledger row without a matching balance change.
+ */
 export async function POST(req: NextRequest) {
     const sessionUser = await getSessionUser();
 
@@ -26,7 +34,7 @@ export async function POST(req: NextRequest) {
         );
     }
 
-    const rounded = Math.round(parsedAmount * 100) / 100;
+    const rounded = toCents(parsedAmount);
 
     const connection = await db.getConnection();
     await connection.beginTransaction();
