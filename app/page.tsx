@@ -5,21 +5,31 @@ import type { RowDataPacket } from "mysql2/promise";
 import { Navbar } from "@/components/dashboard/Navbar";
 import { DashboardClient } from "@/components/dashboard/DashboardClient";
 
-/** Loads the signed-in user row plus aggregate transaction stats for the dashboard header. */
-async function getUserData(userId: number) {
+type UserSummary = {
+  id: number;
+  username: string;
+  email: string;
+  balance: number;
+  created_at: string;
+};
+
+type StatsSummary = {
+  total_deposited: number;
+  total_spent: number;
+  transaction_count: number;
+};
+
+/**
+ * Fetches the signed-in user plus aggregate transaction stats in two queries.
+ * Kept as a local helper so the page component reads top-to-bottom: auth →
+ * data → render.
+ */
+async function getUserData(userId: number): Promise<{ user: UserSummary; stats: StatsSummary } | null> {
   const [userRows] = await db.query<RowDataPacket[]>(
     "SELECT id, username, email, balance, created_at FROM users WHERE id = ?",
     [userId],
   );
-  const user = (
-    userRows as {
-      id: number;
-      username: string;
-      email: string;
-      balance: number;
-      created_at: string;
-    }[]
-  )[0];
+  const user = (userRows as UserSummary[])[0];
   if (!user) return null;
 
   const [statsRows] = await db.query<RowDataPacket[]>(
@@ -31,15 +41,15 @@ async function getUserData(userId: number) {
     WHERE user_id = ?`,
     [userId],
   );
-  const stats = (statsRows as {
-    total_deposited: number;
-    total_spent: number;
-    transaction_count: number;
-  }[])[0];
+  const stats = (statsRows as StatsSummary[])[0];
 
   return { user, stats };
 }
 
+/**
+ * Home is the dashboard: requires a session. If the user row disappeared
+ * (deleted DB row) we treat it like logged-out and send them to login.
+ */
 export default async function HomePage() {
   const sessionUser = await getSessionUser();
 
