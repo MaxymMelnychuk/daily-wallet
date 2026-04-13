@@ -1,10 +1,13 @@
-/** Summary tiles under the hero balance (totals + transaction count). */
 interface StatsRowProps {
     totalDeposited: number;
     totalSpent: number;
     transactionCount: number;
 }
 
+/**
+ * Small presentational block: label, value string, and a semantic color token.
+ * Keeps the three dashboard tiles visually consistent.
+ */
 function StatCard({
     label,
     value,
@@ -32,6 +35,10 @@ function StatCard({
     );
 }
 
+/**
+ * Three-up summary fed from Redux (which was seeded from SQL aggregates on the
+ * server page). Purely read-only — mutations happen in `WalletModal`.
+ */
 export function StatsRow({
     totalDeposited,
     totalSpent,

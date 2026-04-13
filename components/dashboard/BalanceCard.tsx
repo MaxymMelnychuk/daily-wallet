@@ -6,6 +6,12 @@ interface BalanceCardProps {
     balance: number;
 }
 
+const ANIM_MS = 800;
+
+/**
+ * Counts up from the previous displayed value so balance changes feel alive.
+ * We write to `textContent` instead of React state to avoid re-rendering every frame.
+ */
 function AnimatedBalance({ value }: { value: number }) {
     const ref = useRef<HTMLSpanElement>(null);
     const prevRef = useRef(value);
@@ -17,12 +23,11 @@ function AnimatedBalance({ value }: { value: number }) {
         const start = prevRef.current;
         const end = value;
         prevRef.current = value;
-        const duration = 800;
         const startTime = performance.now();
 
         const step = (now: number) => {
             const elapsed = now - startTime;
-            const progress = Math.min(elapsed / duration, 1);
+            const progress = Math.min(elapsed / ANIM_MS, 1);
             const eased = 1 - Math.pow(1 - progress, 3);
             const current = start + (end - start) * eased;
 
@@ -41,6 +46,9 @@ function AnimatedBalance({ value }: { value: number }) {
     return <span ref={ref}>0.00</span>;
 }
 
+/**
+ * Hero panel: big balance readout + disclaimer that funds are virtual/demo.
+ */
 export function BalanceCard({ balance }: BalanceCardProps) {
     return (
         <div className="relative border border-neutral-900 bg-neutral-950 p-24 flex flex-col items-center justify-center overflow-hidden">
