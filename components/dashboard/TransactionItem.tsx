@@ -1,10 +1,13 @@
 import type { TransactionRow } from "@/types/auth";
 
-/** Single ledger row: direction chip, optional description, localized timestamp. */
 interface TransactionItemProps {
     tx: TransactionRow;
 }
 
+/**
+ * One row in the ledger list: icon by direction, human label, timestamp, and
+ * a signed amount. Handles bad `created_at` strings without crashing the list.
+ */
 export function TransactionItem({ tx }: TransactionItemProps) {
     const isDeposit = tx.type === "deposit";
     const date = new Date(tx.created_at);

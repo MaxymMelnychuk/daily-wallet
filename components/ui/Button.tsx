@@ -17,6 +17,11 @@ const variantClasses: Record<Variant, string> = {
   danger: "text-white border border-red-950 hover:bg-red-900/75",
 };
 
+/**
+ * General-purpose button for the dashboard. Variants map to Tailwind class
+ * bundles; anything you pass (`onClick`, `disabled`, etc.) is forwarded to the
+ * native `<button>`.
+ */
 export function Button({
   children,
   variant = "outline",
