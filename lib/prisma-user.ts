@@ -1,6 +1,9 @@
 import { prisma } from "@/lib/prisma";
 
-/** Narrow `select` shape reused anywhere we hydrate a user without secrets. */
+/**
+ * Explicit column allow-list for reads. Never `include` the password field —
+ * that avoids leaking hashes into JSON by mistake.
+ */
 const safeUserSelect = {
     id: true,
     username: true,
@@ -9,10 +12,12 @@ const safeUserSelect = {
     createdAt: true,
 } as const;
 
+/** Whatever `findUserForSession` returns — useful for typing API handlers. */
 export type SafeUserRow = Awaited<ReturnType<typeof findUserForSession>>;
 
 /**
- * API/session reads: explicit `select` so password hashes never enter response DTOs by accident.
+ * Loads a user by id for session refresh / profile endpoints. Prisma maps
+ * `createdAt` in the schema; MySQL REST code still uses `created_at` strings.
  */
 export async function findUserForSession(userId: number) {
     return prisma.user.findUnique({
@@ -22,9 +27,10 @@ export async function findUserForSession(userId: number) {
 }
 
 /**
- * Atomic wallet credit + ledger row (same outcome as the raw SQL deposit route).
- * Spend flows that need “check balance then deduct” should use an interactive
- * transaction and lock the user row (e.g. `findUnique` + update in one tx).
+ * Example of an atomic money movement in Prisma: increment balance and insert
+ * a matching `transactions` row in one `$transaction`. If you add a Prisma-based
+ * spend, use `FOR UPDATE` semantics via interactive transaction + raw query
+ * or serializable isolation — the SQL spend route already locks the row.
  */
 export async function depositForUser(input: {
     userId: number;

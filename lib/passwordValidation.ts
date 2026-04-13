@@ -1,6 +1,11 @@
+/** Minimum length after trimming — keeps rules easy to explain in the UI. */
 const MIN_LENGTH = 8;
 
-/** Returns a user-facing error string or `null` when the password meets policy. */
+/**
+ * Client-side guard before we hit the network. Returns `null` if the password
+ * is acceptable; otherwise a string we can show under the form. Trims
+ * whitespace so users are not tripped up by accidental spaces.
+ */
 export function validatePassword(password: string): string | null {
   const trimmed = password.trim();
   if (trimmed.length < MIN_LENGTH) {
