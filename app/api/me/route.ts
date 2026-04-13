@@ -5,7 +5,10 @@ import type { MeResponse } from "@/types/auth";
 import type { UserRow } from "@/types/user";
 import type { RowDataPacket } from "mysql2/promise";
 
-/** Current user profile + balance for client refresh hooks. */
+/**
+ * Lightweight “who am I + balance” endpoint for client refreshes. Coerces
+ * `balance` with `Number()` because some drivers return DECIMAL as strings.
+ */
 export async function GET() {
     const sessionUser = await getSessionUser();
 

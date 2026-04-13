@@ -1,7 +1,10 @@
 import { NextResponse } from "next/server";
 import { getSession } from "@/lib/session";
 
-/** Clears the encrypted session cookie on the server. */
+/**
+ * Destroys the iron-session cookie contents. `Cache-Control: no-store` stops
+ * intermediaries from caching a “logged out” JSON body that might confuse CDNs.
+ */
 export async function POST() {
     const session = await getSession();
     session.destroy();
