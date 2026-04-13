@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getSessionUser } from "@/lib/session";
 import { db } from "@/lib/db";
-import { TRANSACTION_TYPES, type TransactionsResponse } from "@/types/auth";
+import {
+    TRANSACTION_TYPES,
+    DEFAULT_TRANSACTIONS_LIMIT,
+    MAX_TRANSACTIONS_LIMIT,
+    type TransactionsResponse,
+} from "@/types/auth";
 import type { RowDataPacket } from "mysql2/promise";
 
-/** Paginated ledger for the signed-in user; optional `type=deposit|spend` filter. */
+/**
+ * Paginated ledger for the current user. Query params:
+ * - `type`: `all` (default), `deposit`, or `spend`
+ * - `page`: 1-based
+ * - `limit`: clamped to `MAX_TRANSACTIONS_LIMIT`, default `DEFAULT_TRANSACTIONS_LIMIT`
+ */
 export async function GET(req: NextRequest) {
     const sessionUser = await getSessionUser();
 
@@ -19,8 +29,11 @@ export async function GET(req: NextRequest) {
     const type = searchParams.get("type") ?? "all";
     const pageRaw = parseInt(searchParams.get("page") ?? "1", 10);
     const page = Math.max(1, Number.isFinite(pageRaw) ? pageRaw : 1);
-    const limitRaw = parseInt(searchParams.get("limit") ?? "10", 10);
-    const limit = Math.min(50, Number.isFinite(limitRaw) && limitRaw > 0 ? limitRaw : 10);
+    const limitRaw = parseInt(searchParams.get("limit") ?? String(DEFAULT_TRANSACTIONS_LIMIT), 10);
+    const limit = Math.min(
+        MAX_TRANSACTIONS_LIMIT,
+        Number.isFinite(limitRaw) && limitRaw > 0 ? limitRaw : DEFAULT_TRANSACTIONS_LIMIT,
+    );
     const offset = (page - 1) * limit;
 
     const typeFilter = TRANSACTION_TYPES.includes(type as (typeof TRANSACTION_TYPES)[number])
