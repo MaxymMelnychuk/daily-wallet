@@ -3,7 +3,10 @@ import { verifyUser } from "@/lib/auth";
 import { getSession } from "@/lib/session";
 import type { LoginResponse } from "@/types/auth";
 
-/** Validates credentials, then persists `session.user` in the iron-session cookie. */
+/**
+ * Authenticates credentials, then writes `session.user` and `session.save()`.
+ * Malformed JSON or thrown errors become 500 — consider narrowing that later.
+ */
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();

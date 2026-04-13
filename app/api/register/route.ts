@@ -3,6 +3,11 @@ import { createUser } from "@/lib/auth";
 import { getSession } from "@/lib/session";
 import type { RegisterResponse } from "@/types/auth";
 
+/**
+ * Validates body, inserts the user, then logs them in immediately by setting
+ * the session (same cookie as login). Duplicate email surfaces as `createUser`
+ * throwing — we map that to a 400 with the error text.
+ */
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json();
