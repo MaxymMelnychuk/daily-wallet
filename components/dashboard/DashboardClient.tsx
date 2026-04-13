@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/Button";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { initWallet, setModal, applyTransaction } from "@/store/walletSlice";
 
-/** Client island: wires server-seeded totals into Redux and hosts modals + ledger. */
 interface DashboardClientProps {
     initialBalance: number;
     totalDeposited: number;
@@ -17,6 +16,11 @@ interface DashboardClientProps {
     transactionCount: number;
 }
 
+/**
+ * The interactive dashboard: reads wallet slice from Redux, seeds it once from
+ * server props, opens modals, and applies optimistic updates after successful
+ * `/api/wallet/*` calls.
+ */
 export function DashboardClient({
     initialBalance,
     totalDeposited,
@@ -32,6 +36,7 @@ export function DashboardClient({
     const modal = useAppSelector((state) => state.wallet.modal);
     const refreshTrigger = useAppSelector((state) => state.wallet.refreshTrigger);
 
+    // When navigating back to `/` or after login, rehydrate from fresh server data.
     useEffect(() => {
         dispatch(initWallet({ balance: initialBalance, totalDeposited, totalSpent, transactionCount }));
     }, [dispatch, initialBalance, totalDeposited, totalSpent, transactionCount]);
