@@ -9,6 +9,14 @@ import { AuthFormCard } from "@/components/auth/AuthFormCard";
 import { TextInput } from "@/components/ui/TextInput";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 
+/** Keep in sync with product rules — short names are hard to distinguish in UI. */
+const MIN_USERNAME_LEN = 4;
+
+/**
+ * Creates an account via `/api/register`, then sends the user to login. We
+ * validate password complexity here first to avoid a round trip for obvious
+ * mistakes.
+ */
 export default function RegisterPage() {
   const router = useRouter();
   const [username, setUsername] = useState("");
@@ -22,8 +30,9 @@ export default function RegisterPage() {
     e.preventDefault();
     setError(null);
 
-    if (username.length < 4) {
-      setError("Username must be at least 4 characters");
+    const name = username.trim();
+    if (name.length < MIN_USERNAME_LEN) {
+      setError(`Username must be at least ${MIN_USERNAME_LEN} characters`);
       return;
     }
 
@@ -45,7 +54,7 @@ export default function RegisterPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          username: username.trim(),
+          username: name,
           email: email.trim(),
           password: password.trim(),
         }),
@@ -72,24 +81,32 @@ export default function RegisterPage() {
       <AuthFormCard title="Register" error={error} onSubmit={handleSubmit}>
         <TextInput
           type="text"
+          name="username"
+          autoComplete="username"
           placeholder="Username"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
         <TextInput
           type="email"
+          name="email"
+          autoComplete="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <TextInput
           type="password"
+          name="password"
+          autoComplete="new-password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
         <TextInput
           type="password"
+          name="confirmPassword"
+          autoComplete="new-password"
           placeholder="Confirm Password"
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}

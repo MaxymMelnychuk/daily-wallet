@@ -8,6 +8,10 @@ import { AuthFormCard } from "@/components/auth/AuthFormCard";
 import { TextInput } from "@/components/ui/TextInput";
 import { PrimaryButton } from "@/components/ui/PrimaryButton";
 
+/**
+ * Email + password form. On success the `/api/login` route sets the encrypted
+ * cookie; we then `router.push("/")` so middleware sees the new session.
+ */
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
@@ -52,12 +56,16 @@ export default function LoginPage() {
       <AuthFormCard title="Login" error={error} onSubmit={handleSubmit}>
         <TextInput
           type="email"
+          name="email"
+          autoComplete="email"
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
         <TextInput
           type="password"
+          name="password"
+          autoComplete="current-password"
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
