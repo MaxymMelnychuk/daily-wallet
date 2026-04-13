@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import type { TransactionRow, TransactionsResponse } from "@/types/auth";
+import { LEDGER_UI_PAGE_SIZE, type TransactionRow, type TransactionsResponse } from "@/types/auth";
 import { TransactionItem } from "./TransactionItem";
 
 type TabType = "all" | "deposit" | "spend";
@@ -16,7 +16,10 @@ interface TransactionListProps {
     refreshTrigger?: number;
 }
 
-/** Paginated ledger with tabs; `refreshTrigger` bumps fetches after wallet mutations. */
+/**
+ * Client-side ledger: fetches `/api/transactions` when tab/page changes or when
+ * `refreshTrigger` increments (after a successful wallet mutation).
+ */
 export function TransactionList({ refreshTrigger }: TransactionListProps) {
     const [tab, setTab] = useState<TabType>("all");
     const [transactions, setTransactions] = useState<TransactionRow[]>([]);
@@ -31,7 +34,7 @@ export function TransactionList({ refreshTrigger }: TransactionListProps) {
             setError(null);
             try {
                 const res = await fetch(
-                    `/api/transactions?type=${currentTab}&page=${currentPage}&limit=8`,
+                    `/api/transactions?type=${currentTab}&page=${currentPage}&limit=${LEDGER_UI_PAGE_SIZE}`,
                 );
                 const data: TransactionsResponse = await res.json();
                 if (!res.ok) throw new Error(data.error || "Failed to load");
@@ -62,10 +65,11 @@ export function TransactionList({ refreshTrigger }: TransactionListProps) {
                     Transaction History
                 </h2>
 
-                <div className="flex gap-1 p-1 bg-neutral-900 border border-neutral-800 rounded-md">
+                <div className="flex gap-1 p-1 bg-neutral-900 border border-neutral-800 rounded-md" role="tablist">
                     {TABS.map((t) => (
                         <button
                             key={t.value}
+                            type="button"
                             role="tab"
                             aria-selected={tab === t.value}
                             onClick={() => handleTabChange(t.value)}
@@ -114,6 +118,7 @@ export function TransactionList({ refreshTrigger }: TransactionListProps) {
             {totalPages > 1 && (
                 <div className="flex items-center justify-center p-4 border-t border-neutral-800 gap-4 text-sm font-mono tracking-tight">
                     <button
+                        type="button"
                         onClick={() => setPage((p) => Math.max(1, p - 1))}
                         disabled={page === 1}
                         className="text-neutral-500 hover:text-white disabled:opacity-30 transition-colors"
@@ -124,6 +129,7 @@ export function TransactionList({ refreshTrigger }: TransactionListProps) {
                         <span className="text-white">{page}</span> / {totalPages}
                     </span>
                     <button
+                        type="button"
                         onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
                         disabled={page === totalPages}
                         className="text-neutral-500 hover:text-white disabled:opacity-30 transition-colors"

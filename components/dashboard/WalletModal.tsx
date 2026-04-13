@@ -13,6 +13,11 @@ interface WalletModalProps {
     onSuccess: (newBalance: number) => void;
 }
 
+/**
+ * Overlay form posting to `/api/wallet/deposit` or `/api/wallet/spend`. On
+ * success we bubble the new balance up so Redux can update immediately; the
+ * ledger refetch is triggered separately via `refreshTrigger`.
+ */
 export function WalletModal({ mode, onClose, onSuccess }: WalletModalProps) {
     const [amount, setAmount] = useState("");
     const [description, setDescription] = useState("");
@@ -66,6 +71,7 @@ export function WalletModal({ mode, onClose, onSuccess }: WalletModalProps) {
         <div
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
             onClick={onClose}
+            role="presentation"
         >
             <div
                 className="w-full max-w-md bg-black border border-neutral-800 p-8 shadow-2xl animate-slide-up"
@@ -79,7 +85,9 @@ export function WalletModal({ mode, onClose, onSuccess }: WalletModalProps) {
                         {isDeposit ? "Add Funds" : "Spend Funds"}
                     </h2>
                     <button
+                        type="button"
                         onClick={onClose}
+                        aria-label="Close dialog"
                         className="text-neutral-500 hover:text-white transition-colors p-1 cursor-pointer"
                     >
                         ✕
@@ -119,7 +127,7 @@ export function WalletModal({ mode, onClose, onSuccess }: WalletModalProps) {
                     </div>
 
                     {error && (
-                        <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20">
+                        <div className="p-3 text-sm text-red-500 bg-red-500/10 border border-red-500/20" role="alert">
                             {error}
                         </div>
                     )}
