@@ -7,6 +7,11 @@ interface AuthFormCardProps {
   children: ReactNode;
 }
 
+/**
+ * Bordered stack: title, optional server/validation error, then arbitrary
+ * fields + submit passed as `children`. `role="alert"` helps screen readers
+ * pick up error text immediately.
+ */
 export function AuthFormCard({
   title,
   error,

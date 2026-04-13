@@ -5,7 +5,10 @@ interface AuthShellProps {
   children: ReactNode;
 }
 
-/** Centered layout wrapper for login/register with a home shortcut. */
+/**
+ * Full-height centered column for login/register. The home link is `position:
+ * absolute` so it does not affect vertical centering of the form card.
+ */
 export function AuthShell({ children }: AuthShellProps) {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8">
