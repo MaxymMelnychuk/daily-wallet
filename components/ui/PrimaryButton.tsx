@@ -4,6 +4,10 @@ interface PrimaryButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
 }
 
+/**
+ * Full-width call-to-action for auth forms. Visually heavier than `Button`
+ * `outline` so the main submit stands out inside `AuthFormCard`.
+ */
 export function PrimaryButton({
   children,
   className = "",

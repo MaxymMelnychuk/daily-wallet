@@ -2,6 +2,10 @@ import type { InputHTMLAttributes } from "react";
 
 type TextInputProps = InputHTMLAttributes<HTMLInputElement>;
 
+/**
+ * Styled text field shared by auth and the wallet modal. Pulls `disabled` out
+ * only so we can dim the control — every other HTML input prop still works.
+ */
 export function TextInput({ className = "", disabled, ...props }: TextInputProps) {
   return (
     <input
