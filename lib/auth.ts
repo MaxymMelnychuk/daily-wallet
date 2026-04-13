@@ -4,9 +4,13 @@ import { RowDataPacket, ResultSetHeader } from "mysql2/promise";
 import type { UserRow } from "@/types/user";
 import type { SessionUser } from "@/types/auth";
 
+/** bcrypt cost factor — 10 is a reasonable default for interactive sign-up. */
 const BCRYPT_COST = 10;
 
-/** Registers a user with a hashed password; throws if the email already exists. */
+/**
+ * Inserts a new user with balance 0. Throws `"Email already registered"` if
+ * the email exists — the register route turns that into a 400 JSON error.
+ */
 export async function createUser(
   username: string,
   email: string,
@@ -29,7 +33,11 @@ export async function createUser(
   return result.insertId;
 }
 
-/** Returns session fields when credentials match; otherwise `null` (same message as invalid user). */
+/**
+ * Looks up by email, compares bcrypt hash, returns `{ id, username, email }`
+ * for the session. Returns `null` for both “no user” and “wrong password” so
+ * we do not leak which emails exist.
+ */
 export async function verifyUser(email: string, password: string) {
   const [rows] = await db.query<RowDataPacket[]>(
     "SELECT * FROM users WHERE email = ?",
